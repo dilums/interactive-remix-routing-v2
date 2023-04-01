@@ -1,4 +1,4 @@
-import type { MetaFunction, LinksFunction } from "@remix-run/node";
+import type { LinksFunction, V2_MetaFunction } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -6,26 +6,72 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useMatches,
 } from "@remix-run/react";
-import styles from "./tailwind.css";
+import tailwind from "./tailwind.css";
+import styles from "./styles.css";
+import Sidebar from "~/components/Sidebar";
+import Header from "~/components/Header";
+import Breadcrumbs from "~/components/Breadcrumbs";
+import LayoutWrapper from "~/components/wrappers/LayoutWrapper";
+import { useCallback, useMemo, useState } from "react";
 
-export const meta: MetaFunction = () => ({
-  charset: "utf-8",
-  title: "Interactive Remix Routing | V2",
-  viewport: "width=device-width,initial-scale=1",
-});
+export const meta: V2_MetaFunction = () => {
+  return [
+    { title: "Remix Routing V2" },
+    {
+      property: "og:title",
+      content: "Home Page",
+    },
+    {
+      name: "description",
+      content: "App to visualize remix routing version 2",
+    },
+  ];
+};
 
-export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: tailwind },
+  { rel: "stylesheet", href: styles },
+];
 
 export default function App() {
+  const matches = useMatches();
+  const [isDarkMode, setIsDarkMode] = useState(true);
+
+  const themeProps = useMemo(() => {
+    if (isDarkMode) {
+      return { className: "dark" };
+    }
+    return {};
+  }, [isDarkMode]);
+
+  const toggleDarkMode = useCallback(() => {
+    setIsDarkMode((current) => !current);
+  }, []);
+
   return (
-    <html lang="en">
+    <html lang="en" {...themeProps}>
       <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
         <Meta />
         <Links />
       </head>
-      <body>
-        <Outlet />
+      <body className="bg-white dark:bg-zinc-900 text-black/80 dark:text-zinc-200">
+        <Header toggleDarkMode={toggleDarkMode} isDarkMode={isDarkMode} />
+        <Sidebar />
+        <div style={{ paddingLeft: "400px" }}>
+          <div className="max-w-3xl mx-auto px-4 pt-20">
+            <Breadcrumbs matches={matches} />
+            <div className="mt-8 px-4">
+              <LayoutWrapper filePath="root.tsx">
+                <Outlet />
+              </LayoutWrapper>
+            </div>
+          </div>
+        </div>
+
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
