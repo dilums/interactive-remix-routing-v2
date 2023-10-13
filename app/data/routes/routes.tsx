@@ -20,7 +20,7 @@ const routes: { title: string; tree: TreeNode }[] = [
   { title: "Optional Segments", tree: optionalSegments },
   { title: "Splat Routes", tree: splatRoutes },
   { title: "Special Characters", tree: specialCharacters },
-  { title: "Folder Orgnanization", tree: folderOrganization },
+  { title: "Folder Organization", tree: folderOrganization },
 ];
 
 export default routes;
